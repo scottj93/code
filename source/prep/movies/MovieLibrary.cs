@@ -5,7 +5,7 @@ namespace code.prep.movies
 {
   public class MovieLibrary
   {
-    readonly IList<Movie> movies;
+    IList<Movie> movies;
 
     public MovieLibrary(IList<Movie> list_of_movies)
     {
@@ -14,7 +14,8 @@ namespace code.prep.movies
 
     public IEnumerable<Movie> all_movies()
     {
-      return movies;
+      foreach (var movie in movies)
+        yield return movie;
     }
 
     public void add(Movie movie)
