@@ -11,6 +11,12 @@ alias cnm='find . -name "node_modules" | xargs -E {} rm -rf'
 alias thor='root;'thor' $*'
 alias grunt='root;expands;cd source;'grunt' $*'
 
+function push(){
+  git add -A
+  git commit -m "Updated"
+  gitrb push origin master
+}
+
 # complete -C thor_complete -o default thor
 
 alias cgems='gem list --local | sed "s/\s(.*)//" | grep -v -E "(vrundler|bundler|test-unit|rdoc|psych|io-console|minitest|bigdecimal|rake|json)" | xargs -E {} gem uninstall -a --force'
