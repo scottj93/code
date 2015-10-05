@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<packages>
+<% settings.packages.each do |key, value| %>
+  <package id="<%= key %>" version="<%= value[:version] %>" targetFramework="<%= value[:targetFramework] %>" />
+<% end %>
+</packages>

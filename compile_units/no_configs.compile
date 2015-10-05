@@ -1,0 +1,48 @@
+{
+  name: "code",
+
+  response_file: File.join(settings.response_files_dir,"code.rsp"),
+
+  base_response_template: "source/config/csc.rsp",
+
+  sources: Rake::FileList["source/**/*.cs"]
+          .exclude(/TemporaryGenerated/)
+         .to_a,
+
+  extra_files: Rake::FileList["source/**/*.*"]
+        .exclude(/(bin|obj)/)
+        .exclude(/\.cs$/)
+        .exclude(/\.csproj/)
+        .exclude(/\.user/)
+        .exclude(/\.config/)
+        .exclude(/Gruntfile/)
+        .exclude(/live_reload/)
+        .exclude(/load_order/)
+        .exclude(/bower_components/)
+        .exclude(/karma/)
+        .exclude(/\.json/)
+        .exclude(/\.mustache/)
+        .exclude(/\.erb/)
+        .exclude(/node_modules/)
+        .exclude(/generated/)
+        .to_a,
+
+  references: settings.all_references.select do |item| 
+           /interop/i !~ item 
+         end,
+
+  assembly: {
+    title: "code",
+    company: "Texas A&M",
+    product: "code",
+    copyright: "Copyright © Texas A & M 2015",
+    guid: "96530a97-da3a-4486-af32-894e984fec0d",
+    version: "1.0.0.0"
+  },
+
+  dependent_compiles: [],
+
+  output: File.join(settings.artifacts_dir,"code.dll"),
+
+  target: :library
+}

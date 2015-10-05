@@ -1,0 +1,24 @@
+{
+  name: "code.migrations",
+
+  response_file: File.join(settings.response_files_dir,"code.migrations.rsp"),
+
+  base_response_template: "source/config/csc.rsp",
+
+  sources: Rake::FileList[
+    "source/migrations/**/*.cs",
+    "source/test_utilities/**/*.cs"
+  ].exclude(/TemporaryGenerated/).to_a,
+
+  extra_files: [],
+
+  references: settings.all_references.select do |item| 
+    /interop/i !~ item 
+  end,
+
+  dependent_compiles: [],
+
+  output: File.join(settings.artifacts_dir,"code.migrations.dll"),
+
+  target: :library
+}

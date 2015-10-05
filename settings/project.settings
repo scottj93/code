@@ -1,0 +1,325 @@
+def filter_libs(libs)
+  libs = libs.select do |file|
+    /x86/ !~ file &&
+      /net451/ !~ file &&
+      /SQLite/ !~ file &&
+      /netcore/ !~ file &&
+      /amd64/ !~ file &&
+      /portable/ !~ file &&
+      /sl5/ !~ file &&
+      /Castle/ !~ file &&
+      /Interop/ !~ file &&
+      /content/ !~ file &&
+      /Oracle/ !~ file &&
+      /mono/i !~ file &&
+      /android/i !~ file
+  end
+
+  libs
+end
+
+configure({
+  all_references: delayed do
+    settings.framework_references +
+      settings.libs
+  end, 
+
+  app_dir: delayed{"source"},
+
+  artifacts_dir: "artifacts",
+
+  automation: {
+    folders_to_create: delayed{[
+      settings.artifacts_dir,
+      settings.response_files_dir,
+      settings.specs.dir,
+      settings.specs.report_dir,
+    ]},
+
+    folders_to_clean: delayed{[
+      settings.artifacts_dir,
+      settings.web.intermediate_dir,
+      settings.web.staging_dir
+    ]},
+  },
+
+  build_order: [
+    "all"
+  ].select do |unit|
+    "compile_units/#{unit}.compile"
+  end,
+
+  chrome: '/c/utils/chrome/chrome.exe',
+
+  clear_node_packages: true,
+
+  compiler: {
+    warning_level: 1
+  },
+
+  compile_units: Dir.glob("compile_units/*.compile"),
+
+  config_files: dynamic do 
+    Dir.glob([
+      "source/config/**/*.{config,xml}",
+    ])
+  end,
+
+  main_config_file: 'source/config/web.config',
+
+  browser: 'C:\utils\firefox\firefox.exe',
+
+  config_dir: "source/config",
+
+  deploy_to: {
+    server_name: ENV["COMPUTERNAME"],
+    website_name: 'blue_utility',
+    path: nil
+  },
+
+  database: {
+    provider_for_migrations: 'SqlServer2014',
+    name: 'code',
+    connection_string: 'Server=(LocalDB)\code;Integrated Security=true' 
+  },
+
+  edit_project_template: 'source/edit.csproj.template',
+
+  environment:
+  {
+    auto_reload: true
+  },
+
+  extra_aliases: [],
+
+  framework_references: [
+    "Microsoft.Build.dll",
+    "Microsoft.Build.Engine.dll",
+    "Microsoft.Build.Framework.dll",
+    "Microsoft.Build.Utilities.v4.0.dll",
+    "Microsoft.CSharp.dll",
+    "System.dll",
+    "System.Security.dll",
+    "System.ComponentModel.DataAnnotations.dll",
+    "System.Configuration.dll",
+    "System.Data.dll",
+    "System.Data.DataSetExtensions.dll",
+    "System.Drawing.dll",
+    "System.EnterpriseServices.dll",
+    "System.Net.Http.dll",
+    "System.Net.Http.WebRequest.dll",
+    "System.Runtime.Serialization.dll",
+    "System.ServiceModel.dll",
+    "System.ServiceModel.Activation.dll",
+    "System.ServiceModel.Web.dll",
+    "System.Web.dll",
+    "System.Web.ApplicationServices.dll",
+    "System.Web.DynamicData.dll",
+    "System.Web.Entity.dll",
+    "System.Web.Extensions.dll",
+    "System.Web.Routing.dll",
+    "System.Web.Services.dll",
+    "System.Xml.dll",
+    "System.Xml.Linq.dll",
+  ],
+
+  iis_express: {
+    port: 8080,
+    present: true,
+    enable_in_project_files: true,
+    use_for_deploys: true,
+    path: 'e:\utils\iis_express\iisexpress.exe',
+  },
+
+  libs: delayed do
+    (settings.package_references + 
+     settings.lib_references)
+  end,
+
+  lib_references: delayed do 
+    UniqueFiles.new(filter_libs(Dir.glob("lib/**/*.{dll,exe}"))).all_files
+  end,
+
+  logging: {
+    file_name: delayed{"code_app_log.txt"},
+
+    level: "DEBUG",
+  },
+
+  migrate: {
+    exe: 'packages/FluentMigrator.Tools.1.4.0.0/tools/x86/40/Migrate.exe'
+  },
+
+  net_tools_paths: [
+    '/c/Program Files (x86)',
+    '/c/Program Files (x86)/MSBuild/12.0/bin',
+    '/c/utils/vs2013/Common7/IDE',
+    '/c/utils/vs2013/Common7/Tools',
+    '/c/utils/vs2013/VC/BIN',
+    '/c/Windows/Microsoft.NET/Framework/v4.0.30319',
+    '/c/Program Files (x86)/Microsoft SDKs/Windows/v8.1A/bin/NETFX 4.5.1/Tools/x64/',
+    '/c/Program Files (x86)/Microsoft SDKs/Windows/v8.1A/bin/NETFX 4.5.1 Tools'
+  ],
+
+  nuget:
+  {
+    packages_folder: 'packages',
+
+    packages_config: 'source/config/packages.config'
+  },
+
+  node_author: "aandm-devs",
+
+  package_references: delayed do 
+    UniqueFiles.new(filter_libs(Dir.glob("packages/**/*.{dll,exe}"))).all_files
+  end,
+
+  project: "code",
+
+  git: {
+    provider: 'github', #possible values [github, bitbucket]
+
+    remotes: %w//,
+
+    repo: 'code' 
+  },
+
+  response_files_dir: delayed do
+    File.join(settings.artifacts_dir, "response_files")
+  end,
+
+  root_namespace: "code",
+
+  runner_processes: delayed{%W/#{settings.browser.base_name_without_extension} iisexpress node ruby powershell growl chrome chromedriver cmd/},
+
+  specs:
+  {
+    exe: delayed{"#{settings.artifacts_dir}/mspec-clr4.exe"},
+
+    is_build_error: -> (message) do
+      [ /error/,
+        /FAIL/ 
+      ].any? do |pattern|
+        pattern =~ message
+      end
+    end,
+
+    continuous_testing: {
+      ignored_files: [
+        /generated/,
+        /assembly(_)?info/i,
+        /obj\/Debug/i,
+        /App_Start/i,
+      ],
+
+      glob: -> {
+        files = Dir.glob("source/**/*.cs")
+        results = files.select do |file|
+          settings.specs.continuous_testing.ignored_files.all? do |pattern|
+            pattern !~ file
+          end
+        end
+      },
+
+      runner: ->(compile_file) do
+        `thor specs:run_them #{compile_file} --flags=exclude:slow,seed`
+      end
+    },
+
+    flags: delayed{
+      {
+        :html => "#{settings.specs.report_dir}/#{settings.project}.specs.html",
+      }
+    },
+
+    assemblies: dynamic{Dir.glob("#{settings.artifacts_dir}/#{settings.project}.*dll")},
+
+    dir: delayed{File.join(settings.artifacts_dir,"specs")},
+
+    report_dir: delayed{File.join(settings.specs.dir,"report")},
+  },
+
+  target: "Debug",
+
+  test_compile_unit: 'compile_units/sample_spec.compile',
+
+  ui: {
+    main_layout: "~/layouts/layout.cshtml",
+
+    templates: delayed do
+      results = Dir.glob("source/**/*.cshtml").map do |value|
+        base_name = File.basename(value)
+        base_name_without_ext = File.basename(value, File.extname(value))
+
+        dir_name = File.dirname(value)
+        dir_name = dir_name.gsub(/source\//, "")
+        var_name = dir_name.gsub(/web\.ui\//,"")
+        var_name = var_name.gsub(/\//,"_")
+        var_name = "#{var_name}_#{base_name_without_ext}"
+        file_name = "~/#{dir_name}/#{base_name}"
+
+        ViewFile.new(var_name, file_name)
+      end
+      results
+    end,
+  },
+
+  vagrant: {
+    version: '1.6.5',
+
+    provider: 'virtualbox',
+
+    providers: {
+      virtualbox: {
+        box: 'hashicorp/precise64',
+      }
+    },
+
+    enable_vm_provider_gui: false,
+
+    vm: {
+      memory: 1024,
+      cpus: 1
+    },
+
+    forwarded_ports: [ ],
+  },
+
+  appconfig_settings:  delayed{[
+    { name: "app_name", type: "string", value: 'code' },
+  ]},
+
+  timestamps: {
+
+    verification_file: 'all_timestamps',
+
+    bundles: {
+
+      node_packages: {
+        files: ['source/package.json',
+                'package.json'].concat(
+                  Dir.glob("source/custom_node_modules/**/package.json"))
+          .concat( Dir.glob("source/custom_node_modules/**/*.js"))
+      },
+
+      nuget_packages: {
+        files: ['source/config/packages.config.settings']
+      }
+    }
+  },
+
+  web: {
+    intermediate_dir: "web_intermediate",
+
+    staging_dir: "web_staging",
+
+    log_dir: "web_logs",
+
+    trace_enabled: false,
+
+    trace_dir: "web_trace",
+
+    # vs_output_dir: "source/bin"
+    vs_output_dir: "web_intermediate/bin"
+  },
+})
