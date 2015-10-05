@@ -19,7 +19,16 @@ namespace code.prep.movies
 
     public void add(Movie movie)
     {
-      movies.Add(movie);
+        if (!movies.Contains(movie)) 
+        {
+            foreach (var m in movies)
+            {
+                if (movie.title == m.title)
+                    return;
+            }
+
+            movies.Add(movie);
+        }
     }
 
     public IEnumerable<Movie> all_movies_published_by_pixar()
@@ -54,7 +63,16 @@ namespace code.prep.movies
 
     public IEnumerable<Movie> all_action_movies()
     {
-      throw new NotImplementedException();
+      //throw new NotImplementedException();
+      var action_movies = new List<Movie>();
+      foreach(var m in movies)
+      {
+        if (m.genre == Genre.action)
+        {
+          action_movies.Add(m);
+        }
+      }
+      return action_movies;
     }
 
     public IEnumerable<Movie> sort_all_movies_by_title_descending()
