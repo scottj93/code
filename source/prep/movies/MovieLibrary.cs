@@ -32,9 +32,15 @@ namespace code.prep.movies
 
     public delegate bool MovieCriteria(Movie movie);
 
+    public Criteria<Movie> MyCriteria(MovieCriteria criteria)
+    {
+        var x = new Criteria<Movie>(criteria);
+        return x;
+    }
+
     public IEnumerable<Movie> all_matching_criteria(MovieCriteria criteria)
     {
-      return movies.all_matching_criteria(criteria);
+      return movies.all_matching_criteria(MyCriteria(criteria));
     }
 
     public IEnumerable<Movie> all_movies_published_by_pixar()
