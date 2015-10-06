@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using code.enumerables;
 using developwithpassion.specifications.assertions;
 using developwithpassion.specifications.extensions;
 using developwithpassion.specifications.observations;
@@ -191,14 +192,16 @@ namespace code.prep.movies
 
       It finds_all_movies_published_by_pixar = () =>
       {
-        var results = sut.all_movies_published_by_pixar();
+        var results = sut.all_movies()
+              .all_matching_criteria(Movie.is_published_by());
 
         results.ShouldContainOnly(cars, a_bugs_life);
       };
 
       It finds_all_movies_published_by_pixar_or_disney = () =>
       {
-        var results = sut.all_movies_published_by_pixar_or_disney();
+        var results = sut.all_movies()
+              .all_matching_criteria(Movie.is_published_by_pixar_or_disney());
 
         results.ShouldContainOnly(a_bugs_life, pirates_of_the_carribean, cars);
       };

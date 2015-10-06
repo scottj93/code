@@ -1,4 +1,5 @@
 using System;
+using code.enumerables;
 
 namespace code.prep.movies
 {
@@ -31,6 +32,21 @@ namespace code.prep.movies
     bool equal_to_non_null(Movie other)
     {
       return title.Equals(other.title);
+    }
+
+    public static Criteria<Movie> is_published_by(ProductionStudio studio)
+    {
+      return x => x.production_studio == studio;
+    }
+
+    public static Criteria<Movie> is_in_genre(Genre genre)
+    {
+      return x => x.genre == genre;
+    }
+
+    public static Criteria<Movie> is_published_by_pixar_or_disney()
+    {
+      throw new NotImplementedException();
     }
   }
 }
