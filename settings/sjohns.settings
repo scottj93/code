@@ -1,7 +1,8 @@
 configure({
   browser: 'C:\utils\firefox\firefox.exe',
+ 
 
-  extra_aliases: ['scottj93.aliases'],
+  
   iis_express: {
     present: true,
     enable_in_project_files: true,
