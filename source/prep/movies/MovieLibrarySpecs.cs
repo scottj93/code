@@ -193,7 +193,7 @@ namespace code.prep.movies
       It finds_all_movies_published_by_pixar = () =>
       {
         var results = sut.all_movies()
-              .all_matching_criteria(Movie.is_published_by());
+              .all_items_matching(Movie.is_published_by(ProductionStudio.Pixar));
 
         results.ShouldContainOnly(cars, a_bugs_life);
       };
@@ -201,7 +201,7 @@ namespace code.prep.movies
       It finds_all_movies_published_by_pixar_or_disney = () =>
       {
         var results = sut.all_movies()
-              .all_matching_criteria(Movie.is_published_by_pixar_or_disney());
+              .all_items_matching(Movie.is_published_by_pixar_or_disney());
 
         results.ShouldContainOnly(a_bugs_life, pirates_of_the_carribean, cars);
       };
