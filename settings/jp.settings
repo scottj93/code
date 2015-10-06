@@ -37,5 +37,9 @@ configure({
 
   git: {
     user: 'developwithpassion'
-  }
+  },
+
+  continuous_testing: {
+    interval: 2
+  },
 })

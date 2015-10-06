@@ -65,6 +65,10 @@ configure({
     ])
   end,
 
+  continuous_testing: {
+    interval: 10
+  },
+
   main_config_file: 'source/config/web.config',
 
   browser: 'C:\utils\firefox\firefox.exe',
