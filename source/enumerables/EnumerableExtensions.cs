@@ -10,7 +10,7 @@ namespace code.enumerables
         yield return item;
     }
 
-    public static IEnumerable<Item> all_matching_criteria<Item>(this IEnumerable<Item> items, Criteria<Item> criteria)
+    public static IEnumerable<Item> all_items_matching<Item>(this IEnumerable<Item> items, Criteria<Item> criteria)
     {
       foreach (var item in items)
       {
