@@ -5,6 +5,8 @@ configure({
     present: true,
     enable_in_project_files: true,
   },
+  
+  extra_aliases: ['kanta.aliases'],
 
   web: {
     start_url: "http://localhost:8080/views/Default.aspx",
