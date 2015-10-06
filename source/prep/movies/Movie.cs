@@ -46,7 +46,9 @@ namespace code.prep.movies
 
     public static Criteria<Movie> is_published_by_pixar_or_disney()
     {
-      throw new NotImplementedException();
+        Criteria<Movie> pixar_or_disney = is_published_by(ProductionStudio.Pixar);
+        pixar_or_disney += is_published_by(ProductionStudio.Disney);
+      return pixar_or_disney;
     }
   }
 }
