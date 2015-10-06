@@ -9,5 +9,14 @@ namespace code.enumerables
       foreach (var item in items)
         yield return item;
     }
+
+    public static IEnumerable<Item> all_matching_criteria<Item>(this IEnumerable<Item> items, Criteria<Item> criteria)
+    {
+      foreach (var item in items)
+      {
+        if (criteria(item))
+          yield return item;
+      }
+    }
   }
 }
