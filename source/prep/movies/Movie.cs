@@ -1,5 +1,6 @@
 using System;
 using code.enumerables;
+using code.matching;
 
 namespace code.prep.movies
 {
@@ -34,21 +35,21 @@ namespace code.prep.movies
       return title.Equals(other.title);
     }
 
-    public static Criteria<Movie> is_published_by(ProductionStudio studio)
+    public static IMatchAn<Movie> is_published_by(ProductionStudio studio)
     {
-      return x => x.production_studio == studio;
+      return new IsPublishedBy(studio);
     }
 
-    public static Criteria<Movie> is_in_genre(Genre genre)
+    public static IMatchAn<Movie> is_in_genre(Genre genre)
     {
-      return x => x.genre == genre;
+      return new IsInGenre(genre);
     }
 
     public static Criteria<Movie> is_published_by_pixar_or_disney()
     {
-        Criteria<Movie> pixar_or_disney = is_published_by(ProductionStudio.Pixar);
-        pixar_or_disney += is_published_by(ProductionStudio.Disney);
-      return pixar_or_disney;
+      throw new NotImplementedException();
+//      return x => is_published_by(ProductionStudio.Pixar)(x) ||
+//                  is_published_by(ProductionStudio.Disney)(x);
     }
   }
 }
